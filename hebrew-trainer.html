@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="עברית">
+<title>Hebrew Pronunciation Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Serif+Hebrew:wght@300;400;600&family=Heebo:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0D0F14;
+  --surface: #151820;
+  --surface2: #1C2030;
+  --surface3: #242838;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --gold: #C9A84C;
+  --gold2: #E8C878;
+  --gold-dim: rgba(201,168,76,0.15);
+  --blue: #4A8FD4;
+  --blue-dim: rgba(74,143,212,0.15);
+  --green: #4CAF7A;
+  --green-dim: rgba(76,175,122,0.12);
+  --red: #E05C5C;
+  --red-dim: rgba(224,92,92,0.12);
+  --orange: #E8944A;
+  --text: #E8E0D0;
+  --text2: #9A93A0;
+  --text3: #5A5460;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Heebo', sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 44px);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 10px;
+  flex-shrink: 0;
+  direction: ltr;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 36px; height: 36px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 18px;
+  color: var(--gold);
+}
+
+.app-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.score-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-val {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gold);
+}
+
+/* ── Tab Bar ── */
+.tabs {
+  display: flex;
+  margin: 0 16px 12px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+  flex-shrink: 0;
+  direction: ltr;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: 'Heebo', sans-serif;
+  font-size: 12px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.tab.active {
+  background: var(--surface3);
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.2);
+}
+
+/* ── Scroll Area ── */
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px 16px;
+}
+
+/* ── Input Panel ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+.input-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.input-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+  direction: ltr;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', serif;
+  font-size: 22px;
+  line-height: 1.7;
+  color: var(--text);
+  direction: rtl;
+  text-align: right;
+  resize: none;
+  outline: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s;
+}
+
+textarea::placeholder { color: var(--text3); font-size: 16px; }
+textarea:focus { border-color: rgba(201,168,76,0.3); }
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  direction: ltr;
+}
+
+.btn {
+  flex: 1;
+  padding: 11px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  font-family: 'Heebo', sans-serif;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn:active { opacity: 0.7; transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--gold-dim);
+  border-color: rgba(201,168,76,0.35);
+  color: var(--gold2);
+}
+
+.btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* Camera upload */
+.camera-zone {
+  background: var(--surface2);
+  border: 1.5px dashed rgba(201,168,76,0.25);
+  border-radius: var(--radius-sm);
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.camera-zone:active { border-color: var(--gold); }
+#fileInput { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.camera-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.camera-text { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+.camera-sub { font-size: 11px; color: var(--text3); }
+
+#previewImg {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  display: none;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.ocr-status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text2);
+  text-align: center;
+  min-height: 18px;
+  direction: ltr;
+}
+
+.ocr-status.processing { color: var(--gold); }
+.ocr-status.done { color: var(--green); }
+.ocr-status.error { color: var(--red); }
+
+/* ── Practice Panel ── */
+#practicePanel {
+  padding-bottom: 8px;
+}
+
+.hebrew-display {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  margin-bottom: 12px;
+  min-height: 100px;
+}
+
+.word-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  direction: rtl;
+  justify-content: flex-start;
+}
+
+.word {
+  font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', serif;
+  font-size: 28px;
+  line-height: 1.5;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: default;
+  transition: all 0.3s;
+  border: 1.5px solid transparent;
+  position: relative;
+}
+
+.word.current {
+  color: var(--gold2);
+  border-color: rgba(201,168,76,0.4);
+  background: var(--gold-dim);
+}
+
+.word.correct {
+  color: var(--green);
+  border-color: rgba(76,175,122,0.3);
+  background: var(--green-dim);
+}
+
+.word.incorrect {
+  color: var(--red);
+  border-color: rgba(224,92,92,0.3);
+  background: var(--red-dim);
+}
+
+.word.partial {
+  color: var(--orange);
+  border-color: rgba(232,148,74,0.3);
+  background: rgba(232,148,74,0.1);
+}
+
+.word.skipped {
+  color: var(--text3);
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+/* Transliteration hint */
+.translit {
+  font-size: 11px;
+  color: var(--text3);
+  direction: ltr;
+  text-align: center;
+  font-family: 'Heebo', sans-serif;
+  margin-top: 8px;
+  font-style: italic;
+  min-height: 16px;
+}
+
+/* ── Mic Section ── */
+.mic-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  direction: ltr;
+}
+
+.mic-btn {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(201,168,76,0.3);
+  background: var(--gold-dim);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.mic-btn.listening {
+  border-color: var(--red);
+  background: var(--red-dim);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.mic-btn.listening::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(224,92,92,0.3);
+  animation: ripple 1.2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.mic-btn svg {
+  width: 28px; height: 28px;
+  fill: none; stroke: var(--gold); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke 0.2s;
+}
+
+.mic-btn.listening svg { stroke: var(--red); }
+
+.mic-status {
+  font-size: 13px;
+  color: var(--text2);
+  text-align: center;
+  min-height: 18px;
+}
+
+.mic-status.listening { color: var(--red); }
+
+.heard-text {
+  font-size: 14px;
+  color: var(--text2);
+  text-align: center;
+  direction: rtl;
+  font-family: 'Noto Serif Hebrew', serif;
+  min-height: 20px;
+  font-style: italic;
+}
+
+/* ── Score Panel ── */
+.score-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+  direction: ltr;
+}
+
+.score-title {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.score-box {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.score-box-val {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.score-box-label {
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.progress-bar-wrap {
+  background: var(--surface2);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.word-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.word-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  direction: rtl;
+}
+
+.word-result-hebrew {
+  font-family: 'Noto Serif Hebrew', serif;
+  font-size: 18px;
+}
+
+.word-result-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  direction: ltr;
+}
+
+.word-result-heard {
+  font-size: 12px;
+  color: var(--text2);
+  font-style: italic;
+}
+
+.result-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.badge-correct { background: var(--green-dim); color: var(--green); }
+.badge-partial { background: rgba(232,148,74,0.15); color: var(--orange); }
+.badge-incorrect { background: var(--red-dim); color: var(--red); }
+.badge-skip { background: var(--surface3); color: var(--text3); }
+
+/* ── Controls ── */
+.controls-row {
+  display: flex;
+  gap: 8px;
+  direction: ltr;
+  margin-bottom: 12px;
+}
+
+/* ── Empty / hint ── */
+.empty-hint {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text3);
+}
+
+.empty-hint-he {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 40px;
+  color: rgba(201,168,76,0.2);
+  margin-bottom: 12px;
+}
+
+.empty-hint-text { font-size: 13px; line-height: 1.6; }
+
+/* ── Shimmer loading ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.loading-shimmer {
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  height: 30px;
+  margin: 8px 0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+.notice {
+  background: rgba(74,143,212,0.1);
+  border: 1px solid rgba(74,143,212,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #7AAEDF;
+  direction: ltr;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <div class="logo">א</div>
+    <div class="app-name">Hebrew Trainer</div>
+  </div>
+  <div class="score-badge">
+    Session score: <span class="score-val" id="headerScore">—</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('input')">📋 Paste Text</button>
+  <button class="tab" onclick="switchTab('camera')">📷 Camera / Image</button>
+  <button class="tab" onclick="switchTab('practice')">🎙 Practice</button>
+</div>
+
+<div class="scroll">
+
+  <!-- ══ PASTE TAB ══ -->
+  <div class="panel active" id="inputPanel">
+    <div class="input-area">
+      <div class="input-label">Paste or type Hebrew text</div>
+      <textarea id="hebrewInput" placeholder="הדביק טקסט עברי כאן..." rows="5" dir="rtl"></textarea>
+      <div class="btn-row">
+        <button class="btn" onclick="clearInput()">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          Clear
+        </button>
+        <button class="btn btn-primary" onclick="loadText()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+          Load for Practice
+        </button>
+      </div>
+    </div>
+
+    <div class="notice">
+      💡 Tip: Text with <strong>nikud</strong> (vowel marks like מֶלֶךְ) gives the most accurate pronunciation matching. Plain text without nikud still works great.
+    </div>
+
+    <div class="input-area">
+      <div class="input-label">Sample texts — tap to load</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <button class="btn" style="flex:none;justify-content:flex-start;text-align:right;direction:rtl;font-family:'Noto Serif Hebrew',serif;font-size:16px;padding:12px 14px;line-height:1.5;" onclick="loadSample('shalom')">שָׁלוֹם, מַה שְּׁלוֹמְךָ? <span style="font-size:10px;color:var(--text3);font-family:'Heebo',sans-serif;direction:ltr;"> — Greeting</span></button>
+        <button class="btn" style="flex:none;justify-content:flex-start;text-align:right;direction:rtl;font-family:'Noto Serif Hebrew',serif;font-size:16px;padding:12px 14px;line-height:1.5;" onclick="loadSample('shema')">שְׁמַע יִשְׂרָאֵל יְהֹוָה אֱלֹהֵינוּ יְהֹוָה אֶחָד <span style="font-size:10px;color:var(--text3);font-family:'Heebo',sans-serif;direction:ltr;"> — Shema</span></button>
+        <button class="btn" style="flex:none;justify-content:flex-start;text-align:right;direction:rtl;font-family:'Noto Serif Hebrew',serif;font-size:16px;padding:12px 14px;line-height:1.5;" onclick="loadSample('days')">יוֹם רִאשׁוֹן יוֹם שֵׁנִי יוֹם שְׁלִישִׁי יוֹם רְבִיעִי <span style="font-size:10px;color:var(--text3);font-family:'Heebo',sans-serif;direction:ltr;"> — Days</span></button>
+        <button class="btn" style="flex:none;justify-content:flex-start;text-align:right;direction:rtl;font-family:'Noto Serif Hebrew',serif;font-size:16px;padding:12px 14px;line-height:1.5;" onclick="loadSample('numbers')">אֶחָד שְׁתַּיִם שָׁלוֹשׁ אַרְבַּע חָמֵשׁ שֵׁשׁ שֶׁבַע <span style="font-size:10px;color:var(--text3);font-family:'Heebo',sans-serif;direction:ltr;"> — Numbers</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CAMERA TAB ══ -->
+  <div class="panel" id="cameraPanel">
+    <div class="input-area">
+      <div class="input-label">Take a photo or upload an image</div>
+      <div class="camera-zone" id="cameraZone">
+        <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+        <div class="camera-icon">📷</div>
+        <div class="camera-text">Tap to take photo or choose image</div>
+        <div class="camera-sub">Hebrew text will be extracted automatically</div>
+      </div>
+      <img id="previewImg" alt="preview">
+      <div class="ocr-status" id="ocrStatus"></div>
+    </div>
+
+    <div class="input-area" id="ocrResultBox" style="display:none;">
+      <div class="input-label">Extracted Hebrew text — edit if needed</div>
+      <textarea id="ocrText" placeholder="טקסט מחולץ..." rows="4" dir="rtl"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="loadOcrText()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+          Load for Practice
+        </button>
+      </div>
+    </div>
+
+    <div class="notice" style="margin-top:4px;">
+      📖 OCR works best with clear, printed Hebrew text. Handwriting may have lower accuracy. You can always edit the extracted text before practicing.
+    </div>
+  </div>
+
+  <!-- ══ PRACTICE TAB ══ -->
+  <div class="panel" id="practicePanel">
+
+    <div id="emptyPractice" class="empty-hint">
+      <div class="empty-hint-he">אָ בָ גָ</div>
+      <div class="empty-hint-text">Load some Hebrew text from the<br>Paste or Camera tab to begin</div>
+    </div>
+
+    <div id="practiceContent" style="display:none;">
+
+      <div class="hebrew-display">
+        <div class="word-container" id="wordContainer"></div>
+        <div class="translit" id="translitHint"></div>
+      </div>
+
+      <div class="mic-section">
+        <button class="mic-btn" id="micBtn" onclick="toggleListening()">
+          <svg viewBox="0 0 24 24">
+            <rect x="9" y="2" width="6" height="12" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8" y1="22" x2="16" y2="22"/>
+          </svg>
+        </button>
+        <div class="mic-status" id="micStatus">Tap mic to start speaking</div>
+        <div class="heard-text" id="heardText"></div>
+      </div>
+
+      <div class="controls-row">
+        <button class="btn" onclick="skipWord()">
+          <svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          Skip word
+        </button>
+        <button class="btn" onclick="prevWord()" id="prevBtn" disabled style="opacity:0.4;">
+          <svg viewBox="0 0 24 24"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+          Back
+        </button>
+        <button class="btn btn-primary" onclick="resetPractice()">
+          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Restart
+        </button>
+      </div>
+
+      <div class="score-section" id="scoreSection">
+        <div class="score-title">Session results</div>
+        <div class="score-grid">
+          <div class="score-box">
+            <div class="score-box-val" id="statCorrect" style="color:var(--green)">0</div>
+            <div class="score-box-label">correct</div>
+          </div>
+          <div class="score-box">
+            <div class="score-box-val" id="statPartial" style="color:var(--orange)">0</div>
+            <div class="score-box-label">partial</div>
+          </div>
+          <div class="score-box">
+            <div class="score-box-val" id="statWrong" style="color:var(--red)">0</div>
+            <div class="score-box-label">incorrect</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;text-align:center;" id="progressLabel">0 / 0 words attempted</div>
+        <div class="word-results" id="wordResults"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /scroll -->
+
+<!-- Tesseract for OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let words = [];
+let currentIdx = 0;
+let results = [];  // {word, heard, score: 'correct'|'partial'|'incorrect'|'skip'}
+let recognition = null;
+let isListening = false;
+let totalScore = 0;
+let attempted = 0;
+
+// ══════════════════════════════════════════
+//  SAMPLES
+// ══════════════════════════════════════════
+const SAMPLES = {
+  shalom: 'שָׁלוֹם מַה שְּׁלוֹמְךָ תּוֹדָה רַבָּה לְהִתְרָאוֹת',
+  shema:  'שְׁמַע יִשְׂרָאֵל יְהֹוָה אֱלֹהֵינוּ יְהֹוָה אֶחָד',
+  days:   'יוֹם רִאשׁוֹן יוֹם שֵׁנִי יוֹם שְׁלִישִׁי יוֹם רְבִיעִי יוֹם חֲמִישִׁי יוֹם שִׁשִּׁי שַׁבָּת',
+  numbers:'אֶחָד שְׁתַּיִם שָׁלוֹשׁ אַרְבַּע חָמֵשׁ שֵׁשׁ שֶׁבַע שְׁמוֹנֶה תֵּשַׁע עֶשֶׂר'
+};
+
+function loadSample(key) {
+  document.getElementById('hebrewInput').value = SAMPLES[key];
+  loadText();
+}
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['input','camera','practice'][i] === tab);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const map = {input:'inputPanel', camera:'cameraPanel', practice:'practicePanel'};
+  document.getElementById(map[tab]).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  TEXT LOADING
+// ══════════════════════════════════════════
+function clearInput() {
+  document.getElementById('hebrewInput').value = '';
+}
+
+function tokenize(text) {
+  // Split on whitespace / punctuation but keep Hebrew chars + nikud
+  return text.trim().split(/[\s\n\r،,\.!?;:"""''()\[\]]+/)
+    .map(w => w.replace(/[^\u05D0-\u05EA\u05B0-\u05BD\u05C1\u05C2\u05C7\uFB1D-\uFB4E]/g, '').trim())
+    .filter(w => w.length > 0);
+}
+
+function loadText() {
+  const raw = document.getElementById('hebrewInput').value.trim();
+  if (!raw) return;
+  words = tokenize(raw);
+  if (!words.length) { alert('No valid Hebrew words found.'); return; }
+  initPractice();
+  switchTab('practice');
+}
+
+function loadOcrText() {
+  const raw = document.getElementById('ocrText').value.trim();
+  if (!raw) return;
+  document.getElementById('hebrewInput').value = raw;
+  words = tokenize(raw);
+  if (!words.length) { alert('No valid Hebrew words found.'); return; }
+  initPractice();
+  switchTab('practice');
+}
+
+// ══════════════════════════════════════════
+//  IMAGE / OCR
+// ══════════════════════════════════════════
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const preview = document.getElementById('previewImg');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    preview.src = ev.target.result;
+    preview.style.display = 'block';
+    runOCR(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function runOCR(imageData) {
+  const status = document.getElementById('ocrStatus');
+  const resultBox = document.getElementById('ocrResultBox');
+  resultBox.style.display = 'none';
+  status.className = 'ocr-status processing';
+  status.textContent = 'Recognizing Hebrew text…';
+
+  try {
+    const result = await Tesseract.recognize(imageData, 'heb', {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          status.textContent = `Processing… ${Math.round(m.progress * 100)}%`;
+        }
+      }
+    });
+
+    const text = result.data.text.trim();
+    if (!text) {
+      status.className = 'ocr-status error';
+      status.textContent = 'No text found — try a clearer image.';
+      return;
+    }
+
+    document.getElementById('ocrText').value = text;
+    resultBox.style.display = 'block';
+    status.className = 'ocr-status done';
+    status.textContent = `✓ Extracted ${text.split(/\s+/).length} words — edit if needed`;
+  } catch(err) {
+    status.className = 'ocr-status error';
+    status.textContent = 'OCR failed. Please try again or paste text manually.';
+    console.error(err);
+  }
+}
+
+// ══════════════════════════════════════════
+//  PRACTICE INIT
+// ══════════════════════════════════════════
+function initPractice() {
+  currentIdx = 0;
+  results = [];
+  totalScore = 0;
+  attempted = 0;
+  renderWords();
+  updateScoreDisplay();
+  document.getElementById('emptyPractice').style.display = 'none';
+  document.getElementById('practiceContent').style.display = 'block';
+  document.getElementById('heardText').textContent = '';
+  document.getElementById('micStatus').textContent = 'Tap mic to start speaking';
+  document.getElementById('micStatus').className = 'mic-status';
+  document.getElementById('prevBtn').disabled = true;
+  document.getElementById('prevBtn').style.opacity = '0.4';
+}
+
+function renderWords() {
+  const container = document.getElementById('wordContainer');
+  container.innerHTML = '';
+  words.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'word' + (i === currentIdx ? ' current' : '');
+    span.textContent = w;
+    span.id = 'word-' + i;
+    if (results[i]) span.className = 'word ' + results[i].score;
+    container.appendChild(span);
+  });
+  scrollToCurrentWord();
+  updateTranslit();
+}
+
+function scrollToCurrentWord() {
+  const el = document.getElementById('word-' + currentIdx);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+}
+
+// ══════════════════════════════════════════
+//  TRANSLITERATION HINTS (basic map)
+// ══════════════════════════════════════════
+const TRANSLIT_MAP = {
+  'שָׁלוֹם': 'shalom', 'תּוֹדָה': 'toda', 'רַבָּה': 'raba',
+  'שְׁמַע': 'shma', 'יִשְׂרָאֵל': 'yisrael', 'אֱלֹהֵינוּ': 'eloheinu',
+  'אֶחָד': 'echad', 'שְׁתַּיִם': 'shtayim', 'שָׁלוֹשׁ': 'shalosh',
+  'אַרְבַּע': 'arba', 'חָמֵשׁ': 'chamesh', 'שֵׁשׁ': 'shesh',
+  'שֶׁבַע': 'sheva', 'שְׁמוֹנֶה': 'shmone', 'תֵּשַׁע': 'tesha',
+  'עֶשֶׂר': 'eser', 'יוֹם': 'yom', 'רִאשׁוֹן': 'rishon',
+  'שֵׁנִי': 'sheni', 'שְׁלִישִׁי': 'shlishi', 'רְבִיעִי': 'revi\'i',
+  'חֲמִישִׁי': 'chamishi', 'שִׁשִּׁי': 'shishi', 'שַׁבָּת': 'shabbat',
+  'יְהֹוָה': 'Adonai', 'מַה': 'ma', 'שְּׁלוֹמְךָ': 'shlomcha',
+  'לְהִתְרָאוֹת': "lehitraot",
+};
+
+function stripNikud(word) {
+  return word.replace(/[\u05B0-\u05BD\u05C1\u05C2\u05C7]/g, '');
+}
+
+function updateTranslit() {
+  const hint = document.getElementById('translitHint');
+  if (currentIdx >= words.length) { hint.textContent = ''; return; }
+  const w = words[currentIdx];
+  const t = TRANSLIT_MAP[w] || '';
+  hint.textContent = t ? `≈ "${t}"` : '';
+}
+
+// ══════════════════════════════════════════
+//  SPEECH RECOGNITION
+// ══════════════════════════════════════════
+function initSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+
+  const r = new SpeechRecognition();
+  r.continuous = false;
+  r.interimResults = true;
+  r.lang = 'he-IL';
+  r.maxAlternatives = 5;
+
+  r.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micStatus').textContent = 'Listening…';
+    document.getElementById('micStatus').className = 'mic-status listening';
+  };
+
+  r.onresult = (e) => {
+    let interim = '';
+    let final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        final += t;
+      } else {
+        interim += t;
+      }
+    }
+    document.getElementById('heardText').textContent = final || interim;
+
+    if (final) {
+      // Try all alternatives for best match
+      let bestScore = 'incorrect';
+      let bestHeard = final.trim();
+      for (let i = 0; i < e.results[e.results.length-1].length; i++) {
+        const alt = e.results[e.results.length-1][i].transcript.trim();
+        const s = scoreMatch(words[currentIdx], alt);
+        if (s === 'correct') { bestScore = 'correct'; bestHeard = alt; break; }
+        if (s === 'partial' && bestScore !== 'correct') { bestScore = 'partial'; bestHeard = alt; }
+      }
+      recordResult(bestScore, bestHeard);
+    }
+  };
+
+  r.onerror = (e) => {
+    stopListening();
+    if (e.error === 'not-allowed') {
+      document.getElementById('micStatus').textContent = 'Microphone access denied';
+    } else if (e.error === 'no-speech') {
+      document.getElementById('micStatus').textContent = 'No speech detected — try again';
+      document.getElementById('micStatus').className = 'mic-status';
+    } else {
+      document.getElementById('micStatus').textContent = 'Error: ' + e.error;
+    }
+  };
+
+  r.onend = () => { stopListening(); };
+
+  return r;
+}
+
+function toggleListening() {
+  if (currentIdx >= words.length) return;
+  if (isListening) {
+    recognition && recognition.stop();
+    stopListening();
+  } else {
+    if (!recognition) recognition = initSpeech();
+    if (!recognition) {
+      document.getElementById('micStatus').textContent = 'Speech recognition not supported on this browser';
+      return;
+    }
+    try { recognition.start(); } catch(e) { console.log(e); }
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('listening');
+  if (document.getElementById('micStatus').className.includes('listening')) {
+    document.getElementById('micStatus').textContent = 'Tap mic to speak next word';
+    document.getElementById('micStatus').className = 'mic-status';
+  }
+}
+
+// ══════════════════════════════════════════
+//  SCORING
+// ══════════════════════════════════════════
+function normalizeHebrew(str) {
+  if (!str) return '';
+  // Strip nikud, lowercase, trim
+  return str
+    .replace(/[\u05B0-\u05BD\u05C1\u05C2\u05C7]/g, '')
+    .replace(/[^\u05D0-\u05EA\u05FB-\u05FFa-zA-Z\u0600-\u06FF]/g, ' ')
+    .trim().toLowerCase();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m+1}, (_,i) => Array.from({length: n+1}, (_,j) => i === 0 ? j : j === 0 ? i : 0));
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function scoreMatch(hebrewWord, heardTranscript) {
+  if (!heardTranscript) return 'incorrect';
+
+  const normHebrew = normalizeHebrew(hebrewWord);
+  // heard is already in Hebrew script from he-IL recognition
+  const normHeard = normalizeHebrew(heardTranscript);
+
+  if (!normHebrew || !normHeard) return 'incorrect';
+
+  // Exact match
+  if (normHebrew === normHeard) return 'correct';
+
+  // Check if heard contains the word
+  if (normHeard.includes(normHebrew) || normHebrew.includes(normHeard)) return 'correct';
+
+  // Levenshtein similarity
+  const dist = levenshtein(normHebrew, normHeard);
+  const maxLen = Math.max(normHebrew.length, normHeard.length);
+  const similarity = 1 - (dist / maxLen);
+
+  if (similarity >= 0.80) return 'correct';
+  if (similarity >= 0.50) return 'partial';
+  return 'incorrect';
+}
+
+function recordResult(score, heard) {
+  results[currentIdx] = { word: words[currentIdx], heard, score };
+  attempted = results.filter(r => r && r.score !== 'skip').length;
+
+  // Color the word
+  const el = document.getElementById('word-' + currentIdx);
+  if (el) el.className = 'word ' + score;
+
+  // Update score
+  if (score === 'correct') totalScore += 2;
+  else if (score === 'partial') totalScore += 1;
+
+  updateScoreDisplay();
+  addWordResult(currentIdx);
+
+  // Show feedback briefly then auto-advance
+  document.getElementById('micStatus').textContent =
+    score === 'correct' ? '✓ Correct!' :
+    score === 'partial' ? '~ Close!' : '✗ Try again — advancing';
+  document.getElementById('micStatus').className = 'mic-status';
+
+  if (score !== 'incorrect') {
+    setTimeout(() => advanceWord(), 900);
+  } else {
+    // Allow retry — reset after 2s if no retry
+    setTimeout(() => {
+      if (document.getElementById('micStatus').textContent.includes('advancing') ||
+          document.getElementById('micStatus').textContent.includes('Try again')) {
+        advanceWord();
+      }
+    }, 2000);
+  }
+}
+
+function advanceWord() {
+  if (currentIdx < words.length - 1) {
+    currentIdx++;
+    document.getElementById('prevBtn').disabled = false;
+    document.getElementById('prevBtn').style.opacity = '1';
+    renderWords();
+    document.getElementById('heardText').textContent = '';
+    document.getElementById('micStatus').textContent = 'Tap mic to speak next word';
+  } else {
+    document.getElementById('micStatus').textContent = '🎉 All words completed!';
+    document.getElementById('heardText').textContent = '';
+  }
+}
+
+function skipWord() {
+  results[currentIdx] = { word: words[currentIdx], heard: '—', score: 'skip' };
+  const el = document.getElementById('word-' + currentIdx);
+  if (el) el.className = 'word skipped';
+  addWordResult(currentIdx);
+  updateScoreDisplay();
+  advanceWord();
+}
+
+function prevWord() {
+  if (currentIdx > 0) {
+    currentIdx--;
+    if (currentIdx === 0) {
+      document.getElementById('prevBtn').disabled = true;
+      document.getElementById('prevBtn').style.opacity = '0.4';
+    }
+    renderWords();
+    document.getElementById('heardText').textContent = '';
+    document.getElementById('micStatus').textContent = 'Tap mic to speak';
+  }
+}
+
+function resetPractice() {
+  if (recognition && isListening) recognition.stop();
+  initPractice();
+}
+
+// ══════════════════════════════════════════
+//  SCORE DISPLAY
+// ══════════════════════════════════════════
+function updateScoreDisplay() {
+  const correct = results.filter(r => r && r.score === 'correct').length;
+  const partial  = results.filter(r => r && r.score === 'partial').length;
+  const wrong    = results.filter(r => r && r.score === 'incorrect').length;
+  const skipped  = results.filter(r => r && r.score === 'skip').length;
+  const total    = results.filter(r => r).length;
+
+  document.getElementById('statCorrect').textContent = correct;
+  document.getElementById('statPartial').textContent = partial;
+  document.getElementById('statWrong').textContent = wrong;
+
+  const pct = total > 0 ? Math.round((correct * 2 + partial) / (total * 2) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    `${total} / ${words.length} words attempted — ${pct}% accuracy`;
+
+  const headerVal = total > 0 ? pct + '%' : '—';
+  document.getElementById('headerScore').textContent = headerVal;
+}
+
+function addWordResult(idx) {
+  const r = results[idx];
+  if (!r) return;
+  const container = document.getElementById('wordResults');
+
+  // Remove existing entry for this word if any
+  const existing = document.getElementById('result-' + idx);
+  if (existing) existing.remove();
+
+  const row = document.createElement('div');
+  row.className = 'word-result-row';
+  row.id = 'result-' + idx;
+
+  const badgeClass = r.score === 'correct' ? 'badge-correct' :
+                     r.score === 'partial'  ? 'badge-partial' :
+                     r.score === 'skip'     ? 'badge-skip' : 'badge-incorrect';
+  const badgeText = r.score === 'correct' ? '✓ correct' :
+                    r.score === 'partial'  ? '~ partial' :
+                    r.score === 'skip'     ? 'skipped' : '✗ incorrect';
+
+  row.innerHTML = `
+    <span class="word-result-hebrew">${r.word}</span>
+    <div class="word-result-right">
+      <span class="word-result-heard">${r.score !== 'skip' ? (r.heard || '') : ''}</span>
+      <span class="result-badge ${badgeClass}">${badgeText}</span>
+    </div>
+  `;
+  container.prepend(row);
+}
+</script>
+</body>
+</html>
